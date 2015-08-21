@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.fnp.androidjokes.JokerActivity;
 import com.udacity.gradle.builditbigger.gce.JokeEndpointAsyncTask;
@@ -19,12 +20,15 @@ public class MainActivity extends ActionBarActivity {
 
     private JokeEndpointAsyncTask jokeEndpointAsyncTask;
     private EndpointReceiver endpointReceiver;
+    private ProgressBar loadingIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         endpointReceiver = new EndpointReceiver();
+
+        loadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator);
     }
 
 
@@ -64,13 +68,15 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(jokeEndpointAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
+        if(jokeEndpointAsyncTask != null &&
+                jokeEndpointAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
             jokeEndpointAsyncTask.cancel(true);
             jokeEndpointAsyncTask = null;
         }
     }
 
     public void tellJoke(View view){
+        loadingIndicator.setVisibility(View.VISIBLE);
         jokeEndpointAsyncTask = new JokeEndpointAsyncTask();
         jokeEndpointAsyncTask.execute(this);
     }
@@ -80,6 +86,8 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent != null && intent.hasExtra(JokeEndpointAsyncTask.ENDPOINT_RESULT)){
+                loadingIndicator.setVisibility(View.GONE);
+
                 Intent activityIntent = new Intent(MainActivity.this, JokerActivity.class);
                 activityIntent.putExtra(JokerActivity.JOKE_ACTIVITY_NAME, getString(R.string.jokes));
                 activityIntent.putExtra(JokerActivity.JOKE_EXTRA,

@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'launcher-label'
 
 android {
     compileSdkVersion 22
@@ -17,6 +18,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    productFlavors {
+        free {
+            applicationId "com.udacity.gradle.builditbigger.free"
+            ext.labels = ["FREE"]
+        }
+        paid {
+            applicationId "com.udacity.gradle.builditbigger.paid"
+            ext.labels = ["PAID"]
+        }
+    }
 }
 
 dependencies {
@@ -24,7 +36,7 @@ dependencies {
     // androidJokes lib
     compile project(":androidJokes")
     compile 'com.android.support:appcompat-v7:22.2.1'
-    // Added for AdMob
-    compile 'com.google.android.gms:play-services:7.5.0'
+    // Added for AdMob (only for free)
+    freeCompile 'com.google.android.gms:play-services-ads:7.5.0'
     compile project(path: ':backend', configuration: 'android-endpoints')
 }

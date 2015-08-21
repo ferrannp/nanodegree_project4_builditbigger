@@ -1,7 +1,10 @@
 package com.udacity.gradle.builditbigger;
 
-/**
- * Created by ferrannp on 22/08/15.
- */
-public class FlavorsFeatures {
+import android.view.View;
+
+public class FlavorsFeatures implements FlavorsInterface{
+    @Override
+    public void loadAds(View view) {
+        //No ads
+    }
 }
