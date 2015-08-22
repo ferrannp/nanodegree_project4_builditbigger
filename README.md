@@ -1,3 +1,18 @@
+# nanodegree_project4_builditbigger
+Build It Bigger project.
+
+## Author
+[Ferran Negre Pizarro](https://profiles.udacity.com/u/ferrannegre)
+
+## Comments
+- In ``JokeEndpointAsyncTaskTest.java`` choose to point to local server or to
+``https://builditbigger-fnp.appspot.com/_ah/api/``
+- Genymotion emulator url is ``http://10.0.2.2:8080/_ah/api/`
+- Use ``gradle gceTests --daemon`` to start the GCE development server, run tests and stop the server again
+- All Optional Components have been implemented
+
+---
+
 # Gradle for Android and Java Final Project
 
 In this project, you will create an app with multiple flavors that uses

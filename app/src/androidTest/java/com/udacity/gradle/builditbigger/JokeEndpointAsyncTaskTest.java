@@ -13,6 +13,8 @@ public class JokeEndpointAsyncTaskTest extends AndroidTestCase {
         @Override
         protected void onPostExecute(String result) {
             assertTrue("Result should not be empty", result != null && result.length() > 0);
+            assertEquals("The best place to hide a dead body is page 2 of Google search results.",
+                    result);
             signal.countDown(); //Release the signal and let the test end
         }
     }
