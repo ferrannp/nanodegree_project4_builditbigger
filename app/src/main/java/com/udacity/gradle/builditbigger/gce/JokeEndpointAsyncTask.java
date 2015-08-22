@@ -14,8 +14,8 @@ import java.io.IOException;
 
 public class JokeEndpointAsyncTask extends AsyncTask<Context, Void, String> {
 
-    public static final String INTENT = "com.fnp.backend.intent";
-    public static final String ENDPOINT_RESULT = "com.fnp.backend.response";
+    public static final String ENDPOINT_INTENT = "com.fnp.backend.intent.endpoint";
+    public static final String ENDPOINT_RESULT = "com.fnp.backend.endpoint.response";
 
     private static MyApi myApiService = null;
     private Context context;
@@ -50,7 +50,7 @@ public class JokeEndpointAsyncTask extends AsyncTask<Context, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        Intent intent = new Intent(INTENT);
+        Intent intent = new Intent(ENDPOINT_INTENT);
         intent.putExtra(ENDPOINT_RESULT, result);
         context.sendBroadcast(intent);
     }

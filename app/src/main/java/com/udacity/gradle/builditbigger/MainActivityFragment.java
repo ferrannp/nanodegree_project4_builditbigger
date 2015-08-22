@@ -25,4 +25,14 @@ public class MainActivityFragment extends Fragment {
         flavorsFeatures.loadAds(root);
         return root;
     }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        flavorsFeatures.initInterstitialAd(getActivity());
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    public void showInterstitialAd(){
+        flavorsFeatures.showInterstitialAd(getActivity());
+    }
 }

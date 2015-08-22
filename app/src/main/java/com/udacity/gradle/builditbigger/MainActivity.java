@@ -19,16 +19,21 @@ import com.udacity.gradle.builditbigger.gce.JokeEndpointAsyncTask;
 public class MainActivity extends ActionBarActivity {
 
     private JokeEndpointAsyncTask jokeEndpointAsyncTask;
-    private EndpointReceiver endpointReceiver;
+    private MainReceiver mainReceiver;
     private ProgressBar loadingIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        endpointReceiver = new EndpointReceiver();
+        mainReceiver = new MainReceiver();
 
         loadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator);
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(JokeEndpointAsyncTask.ENDPOINT_INTENT);
+        intentFilter.addAction(FlavorsInterface.INTERSTITIAL_CLOSED);
+        registerReceiver(mainReceiver, intentFilter);
     }
 
 
@@ -54,19 +59,10 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onResume() {
-        super.onResume();
-        IntentFilter filter = new IntentFilter(JokeEndpointAsyncTask.INTENT);
-        registerReceiver(endpointReceiver, filter);
-    }
-
-    public void onPause() {
-        super.onPause();
-        unregisterReceiver(endpointReceiver);
-    }
-
     @Override
     protected void onDestroy() {
+        unregisterReceiver(mainReceiver);
+
         super.onDestroy();
         if(jokeEndpointAsyncTask != null &&
                 jokeEndpointAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
@@ -76,23 +72,30 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void tellJoke(View view){
-        loadingIndicator.setVisibility(View.VISIBLE);
-        jokeEndpointAsyncTask = new JokeEndpointAsyncTask();
-        jokeEndpointAsyncTask.execute(this);
+        MainActivityFragment fragment =
+                (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
+        fragment.showInterstitialAd();
     }
 
-    private class EndpointReceiver extends BroadcastReceiver{
+    private class MainReceiver extends BroadcastReceiver{
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent != null && intent.hasExtra(JokeEndpointAsyncTask.ENDPOINT_RESULT)){
-                loadingIndicator.setVisibility(View.GONE);
+            if(intent != null) {
+                if (intent.getAction().equals(JokeEndpointAsyncTask.ENDPOINT_INTENT)) {
+                    loadingIndicator.setVisibility(View.GONE);
 
-                Intent activityIntent = new Intent(MainActivity.this, JokerActivity.class);
-                activityIntent.putExtra(JokerActivity.JOKE_ACTIVITY_NAME, getString(R.string.jokes));
-                activityIntent.putExtra(JokerActivity.JOKE_EXTRA,
-                        intent.getStringExtra(JokeEndpointAsyncTask.ENDPOINT_RESULT));
-                startActivity(activityIntent);
+                    Intent activityIntent = new Intent(MainActivity.this, JokerActivity.class);
+                    activityIntent.putExtra(JokerActivity.JOKE_ACTIVITY_NAME, getString(R.string.jokes));
+                    activityIntent.putExtra(JokerActivity.JOKE_EXTRA,
+                            intent.getStringExtra(JokeEndpointAsyncTask.ENDPOINT_RESULT));
+                    startActivity(activityIntent);
+                }
+                else if(intent.getAction().equals(FlavorsInterface.INTERSTITIAL_CLOSED)){
+                    loadingIndicator.setVisibility(View.VISIBLE);
+                    jokeEndpointAsyncTask = new JokeEndpointAsyncTask();
+                    jokeEndpointAsyncTask.execute(MainActivity.this);
+                }
             }
         }
     }
